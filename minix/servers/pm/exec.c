@@ -27,6 +27,8 @@
 #include <libexec.h>
 #include <sys/ptrace.h>
 #include "mproc.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 #define ESCRIPT	(-2000)	/* Returned by read_header for a #! script. */
 #define PTRSIZE	sizeof(char *) /* Size of pointers in argv[] and envp[]. */
@@ -38,7 +40,7 @@ int
 do_exec(void)
 {
 	message m;
-
+	
 	/* Forward call to VFS */
 	memset(&m, 0, sizeof(m));
 	m.m_type = VFS_PM_EXEC;
@@ -48,9 +50,19 @@ do_exec(void)
 	m.VFS_PM_FRAME = (void *)m_in.m_lc_pm_exec.frame;
 	m.VFS_PM_FRAME_LEN = m_in.m_lc_pm_exec.framelen;
 	m.VFS_PM_PS_STR = m_in.m_lc_pm_exec.ps_str;
-
-	tell_vfs(mp, &m);
-
+	
+	char *caminho;
+	size_t tamanho = m.VFS_PM_PATH_LEN;
+	caminho = (char *) malloc(tamanho + 1);
+	
+	if (caminho != NULL) {
+		if (sys_datacopy(m.VFS_PM_ENDPT, (vir_bytes)m.VFS_PM_PATH, SELF, (vir_bytes)caminho, tamanho) == OK) {
+			caminho[tamanho] = '\0'; 
+			printf("Executando: <%s>\n", caminho);
+		} else printf("Erro ao tentaer pegar caminho do comando\n");
+		free(caminho);
+	} else printf("Erro ao alocar memória\n");
+	tell_vfs(mp, &m);	
 	/* Do not reply */
 	return SUSPEND;
 }
