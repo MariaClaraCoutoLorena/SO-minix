@@ -95,8 +95,8 @@ int do_noquantum(message *m_ptr)
 		return EBADEPT;
 	}
 
-	rmp = &schedproc[proc_nr_n];
-	if (rmp->priority < MIN_USER_Q) {
+
+	if (rmp->priority != 7 && rmp->priority < MIN_USER_Q) {
 		rmp->priority += 1; /* lower priority */
 	}
 
@@ -211,6 +211,11 @@ int do_start_scheduling(message *m_ptr)
 	default: 
 		/* not reachable */
 		assert(0);
+	}
+
+	if (!is_system_proc(rmp)) {
+		rmp->max_priority = 7;
+		rmp->priority = 7;
 	}
 
 	/* Take over scheduling the process. The kernel reply message populates
