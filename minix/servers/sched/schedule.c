@@ -46,7 +46,7 @@ static int schedule_process(struct schedproc * rmp, unsigned flags);
 static unsigned cpu_proc[CONFIG_MAX_CPUS];
 
 static unsigned int seed = 12345;
-int rand(){
+int meu_rand(){
 	seed = (1103515245 * seed) + 12345;
 	return (int) ((seed / 65536) % 32768);
 }
@@ -103,7 +103,7 @@ int do_noquantum(message *m_ptr)
 
 	rmp = &schedproc[proc_nr_n];
 	if((7 <= rmp->priority) && (rmp->priority <= 14)){
-		rmp->priority = 7 + (rand()%8);
+		rmp->priority = 7 + (meu_rand()%8);
 	}
 	else if ((rmp->priority < MIN_USER_Q)) {
 		rmp->priority += 1; /* lower priority */
@@ -228,7 +228,7 @@ int do_start_scheduling(message *m_ptr)
 
 	if((7<=rmp->max_priority) && (rmp->max_priority <= 14)){
 		rmp->max_priority = 7;
-		rmp->priority = 7 + (rand()%8);
+		rmp->priority = 7 + (meu_rand()%8);
 	}
 
 	/* Take over scheduling the process. The kernel reply message populates
@@ -371,16 +371,16 @@ void init_scheduling(void)
 void balance_queues(void)
 {
 	struct schedproc *rmp;
-	int r, proc_nr, highp = [14, 13, 12, 11], lowp = [10, 9, 8, 7];
+	int r, proc_nr, highp = {14, 13, 12, 11}, lowp = {10, 9, 8, 7};
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 		if (rmp->flags & IN_USE) {
 			if((7<=rmp->priority) && (rmp->priority <= 14)){
 				if(rmp->priority < 11){
-					rmp->priority = highp[((rmp->priority-7) + (rand()%5))%4];
+					rmp->priority = highp[((rmp->priority-7) + (meu_rand()%5))%4];
 				}
 				else{
-					rmp->priority = lowp[((rmp->priority-11) + (rand()%5))%4];
+					rmp->priority = lowp[((rmp->priority-11) + (meu_meu_rand()%5))%4];
 				}
 			}
 			else if (rmp->priority > rmp->max_priority) {
