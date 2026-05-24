@@ -7,7 +7,6 @@
  *   do_nice		  Request to change the nice level on a proc
  *   init_scheduling      Called from main.c to set up/prepare scheduling
  */
-#include <stdlib.h>
 #include "sched.h"
 #include "schedproc.h"
 #include <assert.h>
@@ -45,6 +44,12 @@ static int schedule_process(struct schedproc * rmp, unsigned flags);
 #define is_system_proc(p)	((p)->parent == RS_PROC_NR)
 
 static unsigned cpu_proc[CONFIG_MAX_CPUS];
+
+static unsigned int seed = 12345;
+int rand(){
+	seed = (1103515245 * seed) + 12345;
+	return (int) ((seed / 65536) % 32768);
+}
 
 static void pick_cpu(struct schedproc * proc)
 {
