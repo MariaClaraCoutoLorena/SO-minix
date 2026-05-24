@@ -7,6 +7,7 @@
  *   do_nice		  Request to change the nice level on a proc
  *   init_scheduling      Called from main.c to set up/prepare scheduling
  */
+#include <stdlib.h>
 #include "sched.h"
 #include "schedproc.h"
 #include <assert.h>
@@ -96,8 +97,14 @@ int do_noquantum(message *m_ptr)
 	}
 
 	rmp = &schedproc[proc_nr_n];
-	if (rmp->priority < MIN_USER_Q) {
+	if((7 <= rmp->priority) && (rmp->priority <= 14)){
+		rmp->priority = 7 + (rand()%8);
+	}
+	else if ((rmp->priority < MIN_USER_Q)) {
 		rmp->priority += 1; /* lower priority */
+	}
+	else{
+
 	}
 
 	if ((rv = schedule_process_local(rmp)) != OK) {
@@ -161,6 +168,7 @@ int do_start_scheduling(message *m_ptr)
 	rmp->endpoint     = m_ptr->m_lsys_sched_scheduling_start.endpoint;
 	rmp->parent       = m_ptr->m_lsys_sched_scheduling_start.parent;
 	rmp->max_priority = m_ptr->m_lsys_sched_scheduling_start.maxprio;
+	
 	if (rmp->max_priority >= NR_SCHED_QUEUES) {
 		return EINVAL;
 	}
@@ -211,6 +219,11 @@ int do_start_scheduling(message *m_ptr)
 	default: 
 		/* not reachable */
 		assert(0);
+	}
+
+	if((7<=rmp->max_priority) && (rmp->max_priority <= 14)){
+		rmp->max_priority = 7;
+		rmp->priority = 7 + (rand()%8);
 	}
 
 	/* Take over scheduling the process. The kernel reply message populates
@@ -353,11 +366,19 @@ void init_scheduling(void)
 void balance_queues(void)
 {
 	struct schedproc *rmp;
-	int r, proc_nr;
+	int r, proc_nr, highp = [14, 13, 12, 11], lowp = [10, 9, 8, 7];
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 		if (rmp->flags & IN_USE) {
-			if (rmp->priority > rmp->max_priority) {
+			if((7<=rmp->priority) && (rmp->priority <= 14)){
+				if(rmp->priority < 11){
+					rmp->priority = highp[((rmp->priority-7) + (rand()%5))%4];
+				}
+				else{
+					rmp->priority = lowp[((rmp->priority-11) + (rand()%5))%4];
+				}
+			}
+			else if (rmp->priority > rmp->max_priority) {
 				rmp->priority -= 1; /* increase priority */
 				schedule_process_local(rmp);
 			}
