@@ -371,7 +371,7 @@ void init_scheduling(void)
 void balance_queues(void)
 {
 	struct schedproc *rmp;
-	int r, proc_nr, highp = {14, 13, 12, 11}, lowp = {10, 9, 8, 7};
+	int r, proc_nr, highp[] = {14, 13, 12, 11}, lowp[] = {10, 9, 8, 7};
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 		if (rmp->flags & IN_USE) {
@@ -380,7 +380,7 @@ void balance_queues(void)
 					rmp->priority = highp[((rmp->priority-7) + (meu_rand()%5))%4];
 				}
 				else{
-					rmp->priority = lowp[((rmp->priority-11) + (meu_meu_rand()%5))%4];
+					rmp->priority = lowp[((rmp->priority-11) + (meu_rand()%5))%4];
 				}
 			}
 			else if (rmp->priority > rmp->max_priority) {
