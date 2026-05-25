@@ -96,7 +96,7 @@ int do_noquantum(message *m_ptr)
 	}
 
 
-	if (rmp->priority != 7 && rmp->priority < MIN_USER_Q) {
+	if (rmp->max_priority != 7 && rmp->priority < MIN_USER_Q) {
 		rmp->priority += 1; /* lower priority */
 	}
 
