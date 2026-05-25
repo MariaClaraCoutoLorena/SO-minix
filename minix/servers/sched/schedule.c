@@ -102,14 +102,11 @@ int do_noquantum(message *m_ptr)
 	}
 
 	rmp = &schedproc[proc_nr_n];
-	if((7 <= rmp->priority) && (rmp->priority <= 14)){
+	if(7 == rmp->max_priority){
 		rmp->priority = 7 + (meu_rand()%8);
 	}
 	else if ((rmp->priority < MIN_USER_Q)) {
 		rmp->priority += 1; /* lower priority */
-	}
-	else{
-
 	}
 
 	if ((rv = schedule_process_local(rmp)) != OK) {
@@ -375,18 +372,20 @@ void balance_queues(void)
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 		if (rmp->flags & IN_USE) {
-			if((7<=rmp->priority) && (rmp->priority <= 14)){
+			if(7==rmp->max_priority){
 				if(rmp->priority < 11){
 					rmp->priority = highp[((rmp->priority-7) + (meu_rand()%5))%4];
 				}
 				else{
 					rmp->priority = lowp[((rmp->priority-11) + (meu_rand()%5))%4];
 				}
+				schedule_process_local(rmp);
 			}
 			else if (rmp->priority > rmp->max_priority) {
 				rmp->priority -= 1; /* increase priority */
 				schedule_process_local(rmp);
 			}
+			
 		}
 	}
 
