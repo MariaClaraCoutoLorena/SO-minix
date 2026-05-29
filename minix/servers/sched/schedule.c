@@ -216,16 +216,18 @@ int do_start_scheduling(message *m_ptr)
 
 		rmp->priority = schedproc[parent_nr_n].priority;
 		rmp->time_slice = schedproc[parent_nr_n].time_slice;
+
+		
+		if((7<=rmp->max_priority) && (rmp->max_priority <= 14)){
+			rmp->max_priority = 7;
+			rmp->priority = 7 + (meu_rand()%8);
+		}
+		
 		break;
 		
 	default: 
 		/* not reachable */
 		assert(0);
-	}
-
-	if((7<=rmp->max_priority) && (rmp->max_priority <= 14)){
-		rmp->max_priority = 7;
-		rmp->priority = 7 + (meu_rand()%8);
 	}
 
 	/* Take over scheduling the process. The kernel reply message populates
