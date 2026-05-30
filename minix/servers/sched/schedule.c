@@ -96,7 +96,9 @@ int do_noquantum(message *m_ptr)
 	}
 
 	rmp = &schedproc[proc_nr_n];
-	if (rmp->priority < MIN_USER_Q) {
+	if(7 == rmp->max_priority){
+		rmp->time_slice = -1;
+	} else if (rmp->priority < MIN_USER_Q) {
 		rmp->priority += 1; /* lower priority */
 	}
 
@@ -205,7 +207,11 @@ int do_start_scheduling(message *m_ptr)
 			return rv;
 
 		rmp->priority = schedproc[parent_nr_n].priority;
-		rmp->time_slice = schedproc[parent_nr_n].time_slice;
+		if((7<=rmp->max_priority) && (rmp->max_priority<=14)){
+			rmp->time_slice = -1;
+		} else{
+			rmp->time_slice = schedproc[parent_nr_n].time_slice;
+		}
 		break;
 		
 	default: 
@@ -357,7 +363,7 @@ void balance_queues(void)
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 		if (rmp->flags & IN_USE) {
-			if (rmp->priority > rmp->max_priority) {
+			if(!((7<=rmp->max_priority) && (rmp->max_priority<=14)) && (rmp->priority > rmp->max_priority)){
 				rmp->priority -= 1; /* increase priority */
 				schedule_process_local(rmp);
 			}
