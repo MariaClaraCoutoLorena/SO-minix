@@ -12,7 +12,6 @@
 #include <assert.h>
 #include <minix/com.h>
 #include <machine/archtypes.h>
-#include <limits.h>
 
 static unsigned balance_timeout;
 
@@ -98,7 +97,7 @@ int do_noquantum(message *m_ptr)
 
 	rmp = &schedproc[proc_nr_n];
 	if(7 == rmp->max_priority){
-		rmp->time_slice = INT_MAX;
+		rmp->time_slice = 30000;
 	} else if (rmp->priority < MIN_USER_Q) {
 		rmp->priority += 1; /* lower priority */
 	}
@@ -212,7 +211,7 @@ int do_start_scheduling(message *m_ptr)
 		if (!is_system_proc(rmp)) {
 			rmp->max_priority = 7;
 			rmp->priority = 7;
-			rmp->time_slice = INT_MAX;
+			rmp->time_slice = 30000;
 		} else {
 			rmp->time_slice = schedproc[parent_nr_n].time_slice;
 		}
