@@ -366,7 +366,7 @@ void balance_queues(void)
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 		if (rmp->flags & IN_USE) {
-			if(!(7==rmp->max_priority) && (rmp->priority > rmp->max_priority)){
+			if (rmp->priority > rmp->max_priority){
 				rmp->priority -= 1; /* increase priority */
 				schedule_process_local(rmp);
 			}
