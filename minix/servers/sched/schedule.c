@@ -207,9 +207,12 @@ int do_start_scheduling(message *m_ptr)
 			return rv;
 
 		rmp->priority = schedproc[parent_nr_n].priority;
-		if((7<=rmp->max_priority) && (rmp->max_priority<=14)){
+		
+		if (!is_system_proc(rmp)) {
+			rmp->max_priority = 7;
+			rmp->priority = 7;
 			rmp->time_slice = -1;
-		} else{
+		} else {
 			rmp->time_slice = schedproc[parent_nr_n].time_slice;
 		}
 		break;
