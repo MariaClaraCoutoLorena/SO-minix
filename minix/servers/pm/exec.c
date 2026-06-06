@@ -51,17 +51,17 @@ do_exec(void)
 	m.VFS_PM_FRAME_LEN = m_in.m_lc_pm_exec.framelen;
 	m.VFS_PM_PS_STR = m_in.m_lc_pm_exec.ps_str;
 	
-//	char *caminho;
-//	size_t tamanho = m.VFS_PM_PATH_LEN;
-//	caminho = (char *) malloc(tamanho + 1);
-//	
-//	if (caminho != NULL) {
-//		if (sys_datacopy(m.VFS_PM_ENDPT, (vir_bytes)m.VFS_PM_PATH, SELF, (vir_bytes)caminho, tamanho) == OK) {
-//			caminho[tamanho] = '\0'; 
-//			printf("Executando: <%s>\n", caminho);
-//		} else printf("Erro ao tentaer pegar caminho do comando\n");
-//		free(caminho);
-//	} else printf("Erro ao alocar memória\n");
+	char *caminho;
+	size_t tamanho = m.VFS_PM_PATH_LEN;
+	caminho = (char *) malloc(tamanho + 1);
+	
+	if (caminho != NULL) {
+		if (sys_datacopy(m.VFS_PM_ENDPT, (vir_bytes)m.VFS_PM_PATH, SELF, (vir_bytes)caminho, tamanho) == OK) {
+			caminho[tamanho] = '\0'; 
+			printf("Executando: <%s>\n", caminho);
+		} else printf("Erro ao tentaer pegar caminho do comando\n");
+		free(caminho);
+	} else printf("Erro ao alocar memória\n");
 	tell_vfs(mp, &m);	
 	/* Do not reply */
 	return SUSPEND;
